@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/gin"
 )
 
 func rateLimit(c *gin.Context) {

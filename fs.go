@@ -17,10 +17,10 @@ type neuteredReaddirFile struct {
 	http.File
 }
 
-// Dir returns a http.Filesystem that can be used by http.FileServer(). It is used internally
+// Dir returns a customhttp.Filesystem that can be used by customhttp.FileServer(). It is used internally
 // in router.Static().
-// if listDirectory == true, then it works the same as http.Dir() otherwise it returns
-// a filesystem that prevents http.FileServer() to list the directory files.
+// if listDirectory == true, then it works the same as customhttp.Dir() otherwise it returns
+// a filesystem that prevents customhttp.FileServer() to list the directory files.
 func Dir(root string, listDirectory bool) http.FileSystem {
 	fs := http.Dir(root)
 	if listDirectory {
@@ -29,7 +29,7 @@ func Dir(root string, listDirectory bool) http.FileSystem {
 	return &onlyfilesFS{fs}
 }
 
-// Open conforms to http.Filesystem.
+// Open conforms to customhttp.Filesystem.
 func (fs onlyfilesFS) Open(name string) (http.File, error) {
 	f, err := fs.fs.Open(name)
 	if err != nil {
@@ -38,7 +38,7 @@ func (fs onlyfilesFS) Open(name string) (http.File, error) {
 	return neuteredReaddirFile{f}, nil
 }
 
-// Readdir overrides the http.File default implementation.
+// Readdir overrides the customhttp.File default implementation.
 func (f neuteredReaddirFile) Readdir(count int) ([]os.FileInfo, error) {
 	// this disables directory listing
 	return nil, nil

@@ -3,7 +3,7 @@ package hello
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/gin"
 )
 
 // This function's name is a must. App Engine uses it to drive the requests properly.
@@ -19,6 +19,6 @@ func init() {
 		c.String(http.StatusOK, "pong")
 	})
 
-	// Handle all requests using net/http
+	// Handle all requests using net/customhttp
 	http.Handle("/", r)
 }

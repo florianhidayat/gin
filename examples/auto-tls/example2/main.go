@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/autotls"
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/gin"
 	"golang.org/x/crypto/acme/autocert"
 )
 

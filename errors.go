@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/gin-gonic/gin/json"
+	"github.com/florianhidayat/gin/json"
 )
 
 type ErrorType uint64

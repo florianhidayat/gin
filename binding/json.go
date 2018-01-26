@@ -7,7 +7,7 @@ package binding
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin/json"
+	"github.com/florianhidayat/gin/json"
 )
 
 var EnableDecoderUseNumber = false

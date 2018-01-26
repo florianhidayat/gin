@@ -203,7 +203,7 @@ type structCustomValidation struct {
 // notOne is a custom validator meant to be used with `validator.v8` library.
 // The method signature for `v9` is significantly different and this function
 // would need to be changed for tests to pass after upgrade.
-// See https://github.com/gin-gonic/gin/pull/1015.
+// See https://github.com/florianhidayat/gin/pull/1015.
 func notOne(
 	v *validator.Validate, topStruct reflect.Value, currentStructOrField reflect.Value,
 	field reflect.Value, fieldType reflect.Type, fieldKind reflect.Kind, param string,

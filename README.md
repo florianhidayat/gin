@@ -4,8 +4,8 @@
 
 [![Build Status](https://travis-ci.org/gin-gonic/gin.svg)](https://travis-ci.org/gin-gonic/gin)
  [![codecov](https://codecov.io/gh/gin-gonic/gin/branch/master/graph/badge.svg)](https://codecov.io/gh/gin-gonic/gin)
- [![Go Report Card](https://goreportcard.com/badge/github.com/gin-gonic/gin)](https://goreportcard.com/report/github.com/gin-gonic/gin)
- [![GoDoc](https://godoc.org/github.com/gin-gonic/gin?status.svg)](https://godoc.org/github.com/gin-gonic/gin)
+ [![Go Report Card](https://goreportcard.com/badge/github.com/florianhidayat/gin)](https://goreportcard.com/report/github.com/florianhidayat/gin)
+ [![GoDoc](https://godoc.org/github.com/florianhidayat/gin?status.svg)](https://godoc.org/github.com/florianhidayat/gin)
  [![Join the chat at https://gitter.im/gin-gonic/gin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gin-gonic/gin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Gin is a web framework written in Go (Golang). It features a martini-like API with much better performance, up to 40 times faster thanks to [httprouter](https://github.com/julienschmidt/httprouter). If you need performance and good productivity, you will love Gin.
@@ -20,7 +20,7 @@ $ cat example.go
 ```go
 package main
 
-import "github.com/gin-gonic/gin"
+import "github.com/florianhidayat/gin"
 
 func main() {
 	r := gin.Default()
@@ -92,13 +92,13 @@ BenchmarkVulcan_GithubAll                   |    5000    |   394253    |   19894
 1. Download and install it:
 
 ```sh
-$ go get github.com/gin-gonic/gin
+$ go get github.com/florianhidayat/gin
 ```
 
 2. Import it in your code:
 
 ```go
-import "github.com/gin-gonic/gin"
+import "github.com/florianhidayat/gin"
 ```
 
 3. (Optional) Import `net/http`. This is required for example if using constants such as `http.StatusOK`.
@@ -124,7 +124,7 @@ $ mkdir -p $GOPATH/src/github.com/myusername/project && cd "$_"
 
 ```sh
 $ govendor init
-$ govendor fetch github.com/gin-gonic/gin@v1.2
+$ govendor fetch github.com/florianhidayat/gin@v1.2
 ```
 
 4. Copy a starting template inside your project
@@ -272,7 +272,7 @@ id: 1234; page: 1; name: manu; message: this_is_great
 
 #### Single file
 
-References issue [#774](https://github.com/gin-gonic/gin/issues/774) and detail [example code](examples/upload-file/single).
+References issue [#774](https://github.com/florianhidayat/gin/issues/774) and detail [example code](examples/upload-file/single).
 
 ```go
 func main() {
@@ -538,8 +538,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
+	"github.com/florianhidayat/gin"
+	"github.com/florianhidayat/gin/binding"
 	"gopkg.in/go-playground/validator.v8"
 )
 
@@ -588,7 +588,7 @@ $ curl "localhost:8085/bookable?check_in=2017-08-15&check_out=2017-08-16"
 
 ### Only Bind Query String
 
-`ShouldBindQuery` function only binds the query params and not the post data. See the [detail information](https://github.com/gin-gonic/gin/issues/742#issuecomment-315953017).
+`ShouldBindQuery` function only binds the query params and not the post data. See the [detail information](https://github.com/florianhidayat/gin/issues/742#issuecomment-315953017).
 
 ```go
 package main
@@ -596,7 +596,7 @@ package main
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/gin"
 )
 
 type Person struct {
@@ -624,13 +624,13 @@ func startPage(c *gin.Context) {
 
 ### Bind Query String or Post Data
 
-See the [detail information](https://github.com/gin-gonic/gin/issues/742#issuecomment-264681292).
+See the [detail information](https://github.com/florianhidayat/gin/issues/742#issuecomment-264681292).
 
 ```go
 package main
 
 import "log"
-import "github.com/gin-gonic/gin"
+import "github.com/florianhidayat/gin"
 import "time"
 
 type Person struct {
@@ -649,7 +649,7 @@ func startPage(c *gin.Context) {
 	var person Person
 	// If `GET`, only `Form` binding engine (`query`) used.
 	// If `POST`, first checks the `content-type` for `JSON` or `XML`, then uses `Form` (`form-data`).
-	// See more at https://github.com/gin-gonic/gin/blob/master/binding/binding.go#L48
+	// See more at https://github.com/florianhidayat/gin/blob/master/binding/binding.go#L48
 	if c.ShouldBind(&person) == nil {
 		log.Println(person.Name)
 		log.Println(person.Address)
@@ -667,7 +667,7 @@ $ curl -X GET "localhost:8085/testing?name=appleboy&address=xyz&birthday=1992-03
 
 ### Bind HTML checkboxes
 
-See the [detail information](https://github.com/gin-gonic/gin/issues/129#issuecomment-124260092)
+See the [detail information](https://github.com/florianhidayat/gin/issues/129#issuecomment-124260092)
 
 main.go
 
@@ -717,7 +717,7 @@ result:
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/gin"
 )
 
 type LoginForm struct {
@@ -936,7 +936,7 @@ import (
     "net/http"
     "time"
 
-    "github.com/gin-gonic/gin"
+    "github.com/florianhidayat/gin"
 )
 
 func formatAsDate(t time.Time) string {
@@ -1140,8 +1140,8 @@ package main
 import (
 	"log"
 
-	"github.com/gin-gonic/autotls"
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/autotls"
+	"github.com/florianhidayat/gin"
 )
 
 func main() {
@@ -1165,8 +1165,8 @@ package main
 import (
 	"log"
 
-	"github.com/gin-gonic/autotls"
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/autotls"
+	"github.com/florianhidayat/gin"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -1190,7 +1190,7 @@ func main() {
 
 ### Run multiple service using Gin
 
-See the [question](https://github.com/gin-gonic/gin/issues/346) and try the following example:
+See the [question](https://github.com/florianhidayat/gin/issues/346) and try the following example:
 
 [embedmd]:# (examples/multiple-service/main.go go)
 ```go
@@ -1201,7 +1201,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/gin"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -1275,7 +1275,7 @@ func main() {
 Do you want to graceful restart or stop your web server?
 There are some ways this can be done.
 
-We can use [fvbock/endless](https://github.com/fvbock/endless) to replace the default `ListenAndServe`. Refer issue [#296](https://github.com/gin-gonic/gin/issues/296) for more details.
+We can use [fvbock/endless](https://github.com/fvbock/endless) to replace the default `ListenAndServe`. Refer issue [#296](https://github.com/florianhidayat/gin/issues/296) for more details.
 
 ```go
 router := gin.Default()
@@ -1306,7 +1306,7 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/gin"
 )
 
 func main() {
@@ -1390,9 +1390,9 @@ func TestPingRoute(t *testing.T) {
 }
 ```
 
-## Users  [![Sourcegraph](https://sourcegraph.com/github.com/gin-gonic/gin/-/badge.svg)](https://sourcegraph.com/github.com/gin-gonic/gin?badge)
+## Users  [![Sourcegraph](https://sourcegraph.com/github.com/florianhidayat/gin/-/badge.svg)](https://sourcegraph.com/github.com/florianhidayat/gin?badge)
 
-Awesome project lists using [Gin](https://github.com/gin-gonic/gin) web framework.
+Awesome project lists using [Gin](https://github.com/florianhidayat/gin) web framework.
 
 * [drone](https://github.com/drone/drone): Drone is a Continuous Delivery platform built on Docker, written in Go
 * [gorush](https://github.com/appleboy/gorush): A push notification server written in Go.

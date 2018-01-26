@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/gin-gonic/gin"
+	"github.com/florianhidayat/gin"
 )
 
 var once sync.Once
@@ -98,7 +98,7 @@ func StaticFile(relativePath, filepath string) gin.IRoutes {
 }
 
 // Static serves files from the given file system root.
-// Internally a http.FileServer is used, therefore http.NotFound is used instead
+// Internally a customhttp.FileServer is used, therefore customhttp.NotFound is used instead
 // of the Router's NotFound handler.
 // To use the operating system's file system implementation,
 // use :
@@ -118,21 +118,21 @@ func Use(middlewares ...gin.HandlerFunc) gin.IRoutes {
 	return engine().Use(middlewares...)
 }
 
-// Run : The router is attached to a http.Server and starts listening and serving HTTP requests.
-// It is a shortcut for http.ListenAndServe(addr, router)
+// Run : The router is attached to a customhttp.Server and starts listening and serving HTTP requests.
+// It is a shortcut for customhttp.ListenAndServe(addr, router)
 // Note: this method will block the calling goroutine undefinitelly unless an error happens.
 func Run(addr ...string) (err error) {
 	return engine().Run(addr...)
 }
 
-// RunTLS : The router is attached to a http.Server and starts listening and serving HTTPS requests.
-// It is a shortcut for http.ListenAndServeTLS(addr, certFile, keyFile, router)
+// RunTLS : The router is attached to a customhttp.Server and starts listening and serving HTTPS requests.
+// It is a shortcut for customhttp.ListenAndServeTLS(addr, certFile, keyFile, router)
 // Note: this method will block the calling goroutine undefinitelly unless an error happens.
 func RunTLS(addr string, certFile string, keyFile string) (err error) {
 	return engine().RunTLS(addr, certFile, keyFile)
 }
 
-// RunUnix : The router is attached to a http.Server and starts listening and serving HTTP requests
+// RunUnix : The router is attached to a customhttp.Server and starts listening and serving HTTP requests
 // through the specified unix socket (ie. a file)
 // Note: this method will block the calling goroutine undefinitelly unless an error happens.
 func RunUnix(file string) (err error) {

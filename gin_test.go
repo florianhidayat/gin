@@ -82,7 +82,7 @@ func setupHTMLGlob(t *testing.T, mode string, tls bool) func() {
 
 func TestLoadHTMLGlob(t *testing.T) {
 	td := setupHTMLGlob(t, DebugMode, false)
-	res, err := http.Get("http://127.0.0.1:8888/test")
+	res, err := http.Get("customhttp://127.0.0.1:8888/test")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -95,7 +95,7 @@ func TestLoadHTMLGlob(t *testing.T) {
 
 func TestLoadHTMLGlob2(t *testing.T) {
 	td := setupHTMLGlob(t, TestMode, false)
-	res, err := http.Get("http://127.0.0.1:8888/test")
+	res, err := http.Get("customhttp://127.0.0.1:8888/test")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -108,7 +108,7 @@ func TestLoadHTMLGlob2(t *testing.T) {
 
 func TestLoadHTMLGlob3(t *testing.T) {
 	td := setupHTMLGlob(t, ReleaseMode, false)
-	res, err := http.Get("http://127.0.0.1:8888/test")
+	res, err := http.Get("customhttp://127.0.0.1:8888/test")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -142,7 +142,7 @@ func TestLoadHTMLGlobUsingTLS(t *testing.T) {
 func TestLoadHTMLGlobFromFuncMap(t *testing.T) {
 	time.Now()
 	td := setupHTMLGlob(t, DebugMode, false)
-	res, err := http.Get("http://127.0.0.1:8888/raw")
+	res, err := http.Get("customhttp://127.0.0.1:8888/raw")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -181,7 +181,7 @@ func TestCreateEngine(t *testing.T) {
 
 func TestLoadHTMLFiles(t *testing.T) {
 	td := setupHTMLFiles(t, TestMode, false)
-	res, err := http.Get("http://127.0.0.1:8888/test")
+	res, err := http.Get("customhttp://127.0.0.1:8888/test")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -193,7 +193,7 @@ func TestLoadHTMLFiles(t *testing.T) {
 
 func TestLoadHTMLFiles2(t *testing.T) {
 	td := setupHTMLFiles(t, DebugMode, false)
-	res, err := http.Get("http://127.0.0.1:8888/test")
+	res, err := http.Get("customhttp://127.0.0.1:8888/test")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -205,7 +205,7 @@ func TestLoadHTMLFiles2(t *testing.T) {
 
 func TestLoadHTMLFiles3(t *testing.T) {
 	td := setupHTMLFiles(t, ReleaseMode, false)
-	res, err := http.Get("http://127.0.0.1:8888/test")
+	res, err := http.Get("customhttp://127.0.0.1:8888/test")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -237,7 +237,7 @@ func TestLoadHTMLFilesUsingTLS(t *testing.T) {
 func TestLoadHTMLFilesFuncMap(t *testing.T) {
 	time.Now()
 	td := setupHTMLFiles(t, TestMode, false)
-	res, err := http.Get("http://127.0.0.1:8888/raw")
+	res, err := http.Get("customhttp://127.0.0.1:8888/raw")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -419,27 +419,27 @@ func TestListOfRoutes(t *testing.T) {
 	assertRoutePresent(t, list, RouteInfo{
 		Method:  "GET",
 		Path:    "/favicon.ico",
-		Handler: "^(.*/vendor/)?github.com/gin-gonic/gin.handlerTest1$",
+		Handler: "^(.*/vendor/)?github.com/florianhidayat/gin.handlerTest1$",
 	})
 	assertRoutePresent(t, list, RouteInfo{
 		Method:  "GET",
 		Path:    "/",
-		Handler: "^(.*/vendor/)?github.com/gin-gonic/gin.handlerTest1$",
+		Handler: "^(.*/vendor/)?github.com/florianhidayat/gin.handlerTest1$",
 	})
 	assertRoutePresent(t, list, RouteInfo{
 		Method:  "GET",
 		Path:    "/users/",
-		Handler: "^(.*/vendor/)?github.com/gin-gonic/gin.handlerTest2$",
+		Handler: "^(.*/vendor/)?github.com/florianhidayat/gin.handlerTest2$",
 	})
 	assertRoutePresent(t, list, RouteInfo{
 		Method:  "GET",
 		Path:    "/users/:id",
-		Handler: "^(.*/vendor/)?github.com/gin-gonic/gin.handlerTest1$",
+		Handler: "^(.*/vendor/)?github.com/florianhidayat/gin.handlerTest1$",
 	})
 	assertRoutePresent(t, list, RouteInfo{
 		Method:  "POST",
 		Path:    "/users/:id",
-		Handler: "^(.*/vendor/)?github.com/gin-gonic/gin.handlerTest2$",
+		Handler: "^(.*/vendor/)?github.com/florianhidayat/gin.handlerTest2$",
 	})
 }
 

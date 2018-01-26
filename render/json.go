@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"net/http"
 
-	"github.com/gin-gonic/gin/json"
+	"github.com/florianhidayat/gin/json"
 )
 
 type JSON struct {

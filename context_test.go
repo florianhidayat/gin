@@ -314,7 +314,7 @@ func TestContextHandlerName(t *testing.T) {
 	c, _ := CreateTestContext(httptest.NewRecorder())
 	c.handlers = HandlersChain{func(c *Context) {}, handlerNameTest}
 
-	assert.Regexp(t, "^(.*/vendor/)?github.com/gin-gonic/gin.handlerNameTest$", c.HandlerName())
+	assert.Regexp(t, "^(.*/vendor/)?github.com/florianhidayat/gin.handlerNameTest$", c.HandlerName())
 }
 
 func handlerNameTest(c *Context) {
@@ -334,7 +334,7 @@ func TestContextHandler(t *testing.T) {
 
 func TestContextQuery(t *testing.T) {
 	c, _ := CreateTestContext(httptest.NewRecorder())
-	c.Request, _ = http.NewRequest("GET", "http://example.com/?foo=bar&page=10&id=", nil)
+	c.Request, _ = http.NewRequest("GET", "customhttp://example.com/?foo=bar&page=10&id=", nil)
 
 	value, ok := c.GetQuery("foo")
 	assert.True(t, ok)
@@ -890,7 +890,7 @@ func TestContextRenderRedirectWithRelativePath(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := CreateTestContext(w)
 
-	c.Request, _ = http.NewRequest("POST", "http://example.com", nil)
+	c.Request, _ = http.NewRequest("POST", "customhttp://example.com", nil)
 	assert.Panics(t, func() { c.Redirect(299, "/new_path") })
 	assert.Panics(t, func() { c.Redirect(309, "/new_path") })
 
@@ -904,19 +904,19 @@ func TestContextRenderRedirectWithAbsolutePath(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := CreateTestContext(w)
 
-	c.Request, _ = http.NewRequest("POST", "http://example.com", nil)
-	c.Redirect(302, "http://google.com")
+	c.Request, _ = http.NewRequest("POST", "customhttp://example.com", nil)
+	c.Redirect(302, "customhttp://google.com")
 	c.Writer.WriteHeaderNow()
 
 	assert.Equal(t, 302, w.Code)
-	assert.Equal(t, "http://google.com", w.Header().Get("Location"))
+	assert.Equal(t, "customhttp://google.com", w.Header().Get("Location"))
 }
 
 func TestContextRenderRedirectWith201(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := CreateTestContext(w)
 
-	c.Request, _ = http.NewRequest("POST", "http://example.com", nil)
+	c.Request, _ = http.NewRequest("POST", "customhttp://example.com", nil)
 	c.Redirect(201, "/resource")
 	c.Writer.WriteHeaderNow()
 
@@ -926,7 +926,7 @@ func TestContextRenderRedirectWith201(t *testing.T) {
 
 func TestContextRenderRedirectAll(t *testing.T) {
 	c, _ := CreateTestContext(httptest.NewRecorder())
-	c.Request, _ = http.NewRequest("POST", "http://example.com", nil)
+	c.Request, _ = http.NewRequest("POST", "customhttp://example.com", nil)
 	assert.Panics(t, func() { c.Redirect(200, "/resource") })
 	assert.Panics(t, func() { c.Redirect(202, "/resource") })
 	assert.Panics(t, func() { c.Redirect(299, "/resource") })
@@ -1236,7 +1236,7 @@ func TestContextBadAutoBind(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := CreateTestContext(w)
 
-	c.Request, _ = http.NewRequest("POST", "http://example.com", bytes.NewBufferString("\"foo\":\"bar\", \"bar\":\"foo\"}"))
+	c.Request, _ = http.NewRequest("POST", "customhttp://example.com", bytes.NewBufferString("\"foo\":\"bar\", \"bar\":\"foo\"}"))
 	c.Request.Header.Add("Content-Type", MIMEJSON)
 	var obj struct {
 		Foo string `json:"foo"`
@@ -1305,7 +1305,7 @@ func TestContextBadAutoShouldBind(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := CreateTestContext(w)
 
-	c.Request, _ = http.NewRequest("POST", "http://example.com", bytes.NewBufferString("\"foo\":\"bar\", \"bar\":\"foo\"}"))
+	c.Request, _ = http.NewRequest("POST", "customhttp://example.com", bytes.NewBufferString("\"foo\":\"bar\", \"bar\":\"foo\"}"))
 	c.Request.Header.Add("Content-Type", MIMEJSON)
 	var obj struct {
 		Foo string `json:"foo"`
@@ -1344,7 +1344,7 @@ func TestWebsocketsRequired(t *testing.T) {
 	c.Request.Header.Set("Upgrade", "websocket")
 	c.Request.Header.Set("Connection", "Upgrade")
 	c.Request.Header.Set("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
-	c.Request.Header.Set("Origin", "http://example.com")
+	c.Request.Header.Set("Origin", "customhttp://example.com")
 	c.Request.Header.Set("Sec-WebSocket-Protocol", "chat, superchat")
 	c.Request.Header.Set("Sec-WebSocket-Version", "13")
 

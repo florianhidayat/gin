@@ -33,7 +33,7 @@ func Bind(val interface{}) HandlerFunc {
 	}
 }
 
-// WrapF is a helper function for wrapping http.HandlerFunc
+// WrapF is a helper function for wrapping customhttp.HandlerFunc
 // Returns a Gin middleware
 func WrapF(f http.HandlerFunc) HandlerFunc {
 	return func(c *Context) {
@@ -41,7 +41,7 @@ func WrapF(f http.HandlerFunc) HandlerFunc {
 	}
 }
 
-// WrapH is a helper function for wrapping http.Handler
+// WrapH is a helper function for wrapping customhttp.Handler
 // Returns a Gin middleware
 func WrapH(h http.Handler) HandlerFunc {
 	return func(c *Context) {

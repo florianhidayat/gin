@@ -41,7 +41,7 @@ func TestRunEmpty(t *testing.T) {
 	time.Sleep(5 * time.Millisecond)
 
 	assert.Error(t, router.Run(":8080"))
-	testRequest(t, "http://localhost:8080/example")
+	testRequest(t, "customhttp://localhost:8080/example")
 }
 
 func TestRunEmptyWithEnv(t *testing.T) {
@@ -56,7 +56,7 @@ func TestRunEmptyWithEnv(t *testing.T) {
 	time.Sleep(5 * time.Millisecond)
 
 	assert.Error(t, router.Run(":3123"))
-	testRequest(t, "http://localhost:3123/example")
+	testRequest(t, "customhttp://localhost:3123/example")
 }
 
 func TestRunTooMuchParams(t *testing.T) {
@@ -77,7 +77,7 @@ func TestRunWithPort(t *testing.T) {
 	time.Sleep(5 * time.Millisecond)
 
 	assert.Error(t, router.Run(":5150"))
-	testRequest(t, "http://localhost:5150/example")
+	testRequest(t, "customhttp://localhost:5150/example")
 }
 
 func TestUnixSocket(t *testing.T) {
@@ -121,12 +121,12 @@ func TestWithHttptestWithAutoSelectedPort(t *testing.T) {
 
 // func TestWithHttptestWithSpecifiedPort(t *testing.T) {
 // 	router := New()
-// 	router.GET("/example", func(c *Context) { c.String(http.StatusOK, "it worked") })
+// 	router.GET("/example", func(c *Context) { c.String(customhttp.StatusOK, "it worked") })
 
 // 	l, _ := net.Listen("tcp", ":8033")
 // 	ts := httptest.Server{
 // 		Listener: l,
-// 		Config:   &http.Server{Handler: router},
+// 		Config:   &customhttp.Server{Handler: router},
 // 	}
 // 	ts.Start()
 // 	defer ts.Close()

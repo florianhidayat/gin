@@ -13,7 +13,7 @@ git:
 install:
   - make install
 
-go_import_path: github.com/gin-gonic/gin
+go_import_path: github.com/florianhidayat/gin
 
 script:
   - make vet

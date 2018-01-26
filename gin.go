@@ -11,7 +11,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/gin-gonic/gin/render"
+	"github.com/florianhidayat/gin/render"
 )
 
 const (
@@ -53,7 +53,7 @@ type Engine struct {
 	// Enables automatic redirection if the current route can't be matched but a
 	// handler for the path with (without) the trailing slash exists.
 	// For example if /foo/ is requested but a route only exists for /foo, the
-	// client is redirected to /foo with http status code 301 for GET requests
+	// client is redirected to /foo with customhttp status code 301 for GET requests
 	// and 307 for all other request methods.
 	RedirectTrailingSlash bool
 
@@ -89,7 +89,7 @@ type Engine struct {
 	// as url.Path gonna be used, which is already unescaped.
 	UnescapePathValues bool
 
-	// Value of 'maxMemory' param that is given to http.Request's ParseMultipartForm
+	// Value of 'maxMemory' param that is given to customhttp.Request's ParseMultipartForm
 	// method call.
 	MaxMultipartMemory int64
 
@@ -253,7 +253,7 @@ func (engine *Engine) addRoute(method, path string, handlers HandlersChain) {
 }
 
 // Routes returns a slice of registered routes, including some useful information, such as:
-// the http method, path and the handler name.
+// the customhttp method, path and the handler name.
 func (engine *Engine) Routes() (routes RoutesInfo) {
 	for _, tree := range engine.trees {
 		routes = iterate("", tree.method, routes, tree.root)
@@ -276,8 +276,8 @@ func iterate(path, method string, routes RoutesInfo, root *node) RoutesInfo {
 	return routes
 }
 
-// Run attaches the router to a http.Server and starts listening and serving HTTP requests.
-// It is a shortcut for http.ListenAndServe(addr, router)
+// Run attaches the router to a customhttp.Server and starts listening and serving HTTP requests.
+// It is a shortcut for customhttp.ListenAndServe(addr, router)
 // Note: this method will block the calling goroutine indefinitely unless an error happens.
 func (engine *Engine) Run(addr ...string) (err error) {
 	defer func() { debugPrintError(err) }()
@@ -288,8 +288,8 @@ func (engine *Engine) Run(addr ...string) (err error) {
 	return
 }
 
-// RunTLS attaches the router to a http.Server and starts listening and serving HTTPS (secure) requests.
-// It is a shortcut for http.ListenAndServeTLS(addr, certFile, keyFile, router)
+// RunTLS attaches the router to a customhttp.Server and starts listening and serving HTTPS (secure) requests.
+// It is a shortcut for customhttp.ListenAndServeTLS(addr, certFile, keyFile, router)
 // Note: this method will block the calling goroutine indefinitely unless an error happens.
 func (engine *Engine) RunTLS(addr, certFile, keyFile string) (err error) {
 	debugPrint("Listening and serving HTTPS on %s\n", addr)
@@ -299,7 +299,7 @@ func (engine *Engine) RunTLS(addr, certFile, keyFile string) (err error) {
 	return
 }
 
-// RunUnix attaches the router to a http.Server and starts listening and serving HTTP requests
+// RunUnix attaches the router to a customhttp.Server and starts listening and serving HTTP requests
 // through the specified unix socket (ie. a file).
 // Note: this method will block the calling goroutine indefinitely unless an error happens.
 func (engine *Engine) RunUnix(file string) (err error) {
@@ -316,7 +316,7 @@ func (engine *Engine) RunUnix(file string) (err error) {
 	return
 }
 
-// ServeHTTP conforms to the http.Handler interface.
+// ServeHTTP conforms to the customhttp.Handler interface.
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	c := engine.pool.Get().(*Context)
 	c.writermem.reset(w)
