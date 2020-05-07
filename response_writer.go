@@ -11,8 +11,7 @@ import (
 	"net/http"
 	"crypto/aes"
 	"crypto/cipher"
-	"reflect"
-	"os"
+	"encoding/binary"
 )
 
 const (
@@ -56,9 +55,6 @@ type ResponseWriter interface {
 
 	//sets start index in file (in byte order)
 	SetStartIndex(uint64)
-
-	//attaches file, used if seeking is needed.
-	AttachFile(*os.File)
 }
 
 type responseWriter struct {
@@ -72,7 +68,6 @@ type encryptionParams struct {
 	key []byte
 	iv []byte
 	enableEncryption bool
-	file *os.File
 	startIndex uint64
 }
 
@@ -106,25 +101,16 @@ func (w *responseWriter) Write(data []byte) (n int, err error) {
 	w.WriteHeaderNow()
 	//n, err = w.ResponseWriter.Write(data)
 	if w.enableEncryption {
-		var nextIv []byte
 		var encrypted []byte
 
-		//only prepend once
-		if w.size == 0 {
-			prependedData, offset, _ := w.prependIfNeeded(data)
-			//println("data length becomes", len(prependedData), "offset is", offset)
+		appendedData, appOffset, _ := w.appendIfNeeded(data)
+		paddedData, prepOffset, _ := w.prependIfNeeded(appendedData)
+		//println("data length becomes", len(prependedData), "offset is", offset)
 
-			encrypted, nextIv = encrypt(w.key, w.iv, prependedData)
-			n, err = w.ResponseWriter.Write(encrypted[offset:])
-			//data = prependedData[offset:]
-			n -= int(offset)
-		} else {
-			encrypted, nextIv = encrypt(w.key, w.iv, data)
-			n, err = w.ResponseWriter.Write(encrypted)
-			//println("n is:", n)
-		}
-
-		w.iv = nextIv
+		encrypted = encrypt(w.key, w.iv, paddedData)
+		dataEnd := uint64(len(paddedData)) - appOffset
+		n, err = w.ResponseWriter.Write(encrypted[prepOffset:dataEnd])
+		w.iv = addCounter(w.iv, uint64(n/aes.BlockSize))
 	} else {
 		n, err = w.ResponseWriter.Write(data)
 	}
@@ -192,18 +178,30 @@ func (w *responseWriter) SetStartIndex(index uint64) {
 	w.startIndex = index
 }
 
-func (w *responseWriter) AttachFile(file *os.File) {
-	w.file = file
+func (w *responseWriter) appendIfNeeded(data []byte) (appendedData []byte, appendedBytes uint64, err error) {
+	appendedBytes = 16 - (w.startIndex + uint64(w.size) + uint64(len(data))) % 16
+	if appendedBytes > 0 && appendedBytes < 16 {
+		//fmt.Printf("index %d, appending %d", (int(w.startIndex) + w.size), appendedBytes)
+		bytesToAppend := make([]byte, appendedBytes)
+		appendedData = append(data, bytesToAppend...)
+		return appendedData, appendedBytes, err
+	} else {
+		return data, 0, err
+	}
 }
 
 func (w *responseWriter) prependIfNeeded(data []byte) (prependedData []byte, prependedBytes uint64, err error) {
-	prependedBytes = w.startIndex % 16
+	prependedBytes = (w.startIndex + uint64(w.size)) % 16
 	if prependedBytes > 0 {
+		//fmt.Printf(" prepending %d\n", prependedBytes)
 		bytesToPrepend := make([]byte, prependedBytes)
-		_, err := w.file.ReadAt(bytesToPrepend, int64(w.startIndex -prependedBytes))
-		if err != nil {
-			return nil,0, err
-		}
+		//_, err := w.file.ReadAt(bytesToPrepend, int64(w.startIndex - prependedBytes))
+		//if err != nil {
+		//	return nil,0, err
+		//}
+		//for i := 0; i < len(bytesToPrepend); i++ {
+		//	bytesToPrepend[i] = 0
+		//}
 
 		prependedData = append(bytesToPrepend, data...)
 		return prependedData, prependedBytes, err
@@ -213,39 +211,29 @@ func (w *responseWriter) prependIfNeeded(data []byte) (prependedData []byte, pre
 }
 
 // encrypt using AES/CTR/NoPadding
-func encrypt(key []byte, iv []byte, data []byte) ([]byte, []byte) {
+func encrypt(key []byte, iv []byte, data []byte) []byte {
 	// key := []byte(keyText)
 	//plaintext := []byte(text)
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
+		println("error during encryption, panicking")
 		panic(err)
 	}
 
-	// The IV needs to be unique, but not secure. Therefore it's common to
-	// include it at the beginning of the ciphertext.
-	//plainTextWithPadding := padding.AddPkcs7(plaintext, aes.BlockSize)
-	//iv := ciphertext[:aes.BlockSize]
-	//if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-	//	panic(err)
-	//}
 	encrypted := make([]byte, len(data))
 
 	stream := cipher.NewCTR(block, iv)
 	stream.XORKeyStream(encrypted, data)
 
-	v := reflect.ValueOf(stream).Elem()
-	//println("ctr value is:", hex.EncodeToString(v.FieldByName("ctr").Bytes()))
-	//stream.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)
+	//v := reflect.ValueOf(stream).Elem()
 
-	// convert to base64
-	return encrypted, v.FieldByName("ctr").Bytes()
-	//return hex.EncodeToString(ciphertext)
+	return encrypted//, v.FieldByName("ctr").Bytes()
 }
 
 
 // decrypt from hex to decrypted string
-func decrypt(key []byte, iv []byte, data []byte) ([]byte, []byte) {
+func decrypt(key []byte, iv []byte, data []byte) []byte {
 	//ciphertext, _ := hex.DecodeString(cryptoText)
 
 	block, err := aes.NewCipher(key)
@@ -268,8 +256,33 @@ func decrypt(key []byte, iv []byte, data []byte) ([]byte, []byte) {
 	// XORKeyStream can work in-place if the two arguments are the same.
 	//stream.CryptBlocks(origData, ciphertext)
 	stream.XORKeyStream(origData, data)
-	v := reflect.ValueOf(stream).Elem()
+	//v := reflect.ValueOf(stream).Elem()
 	//origData = padding.RemovePkcs7(origData, aes.BlockSize)
 
-	return origData, v.FieldByName("ctr").Bytes()
+	return origData
+}
+
+
+
+func addCounter(iv []byte, counter uint64) []byte {
+	secondHalf := binary.BigEndian.Uint64(iv[8:16])
+	afterAddition := secondHalf + counter
+
+	//check for overflow condition
+	if afterAddition < secondHalf {
+		println("has overflow")
+		firstHalf := binary.BigEndian.Uint64(iv[0:8])
+		firstHalf++
+
+		firstSlice := make([]byte, 8)
+		binary.BigEndian.PutUint64(firstSlice, firstHalf)
+
+		secondSlice := make([]byte, 8)
+		binary.BigEndian.PutUint64(secondSlice, afterAddition)
+		return append(append([]byte{}, firstSlice...), secondSlice...)
+	} else {
+		secondSlice := make([]byte, 8)
+		binary.BigEndian.PutUint64(secondSlice, afterAddition)
+		return append(append([]byte{}, iv[0:8]...), secondSlice...)
+	}
 }
