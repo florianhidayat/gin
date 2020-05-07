@@ -6,12 +6,11 @@ package binding
 
 import (
 	"bytes"
-	"reflect"
 	"testing"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/go-playground/validator.v8"
 )
 
 type testInterface interface {
@@ -176,7 +175,7 @@ func TestValidatePrimitives(t *testing.T) {
 	obj := Object{"foo": "bar", "bar": 1}
 	assert.NoError(t, validate(obj))
 	assert.NoError(t, validate(&obj))
-	assert.Equal(t, obj, Object{"foo": "bar", "bar": 1})
+	assert.Equal(t, Object{"foo": "bar", "bar": 1}, obj)
 
 	obj2 := []Object{{"foo": "bar", "bar": 1}, {"foo": "bar", "bar": 1}}
 	assert.NoError(t, validate(obj2))
@@ -185,12 +184,12 @@ func TestValidatePrimitives(t *testing.T) {
 	nu := 10
 	assert.NoError(t, validate(nu))
 	assert.NoError(t, validate(&nu))
-	assert.Equal(t, nu, 10)
+	assert.Equal(t, 10, nu)
 
 	str := "value"
 	assert.NoError(t, validate(str))
 	assert.NoError(t, validate(&str))
-	assert.Equal(t, str, "value")
+	assert.Equal(t, "value", str)
 }
 
 // structCustomValidation is a helper struct we use to check that
@@ -200,25 +199,21 @@ type structCustomValidation struct {
 	Integer int `binding:"notone"`
 }
 
-// notOne is a custom validator meant to be used with `validator.v8` library.
-// The method signature for `v9` is significantly different and this function
-// would need to be changed for tests to pass after upgrade.
-// See https://github.com/florianhidayat/gin/pull/1015.
-func notOne(
-	v *validator.Validate, topStruct reflect.Value, currentStructOrField reflect.Value,
-	field reflect.Value, fieldType reflect.Type, fieldKind reflect.Kind, param string,
-) bool {
-	if val, ok := field.Interface().(int); ok {
+func notOne(f1 validator.FieldLevel) bool {
+	if val, ok := f1.Field().Interface().(int); ok {
 		return val != 1
 	}
 	return false
 }
 
-func TestRegisterValidation(t *testing.T) {
+func TestValidatorEngine(t *testing.T) {
 	// This validates that the function `notOne` matches
 	// the expected function signature by `defaultValidator`
 	// and by extension the validator library.
-	err := Validator.RegisterValidation("notone", notOne)
+	engine, ok := Validator.Engine().(*validator.Validate)
+	assert.True(t, ok)
+
+	err := engine.RegisterValidation("notone", notOne)
 	// Check that we can register custom validation without error
 	assert.Nil(t, err)
 
@@ -228,6 +223,6 @@ func TestRegisterValidation(t *testing.T) {
 
 	// Check that we got back non-nil errs
 	assert.NotNil(t, errs)
-	// Check that the error matches expactation
+	// Check that the error matches expectation
 	assert.Error(t, errs, "", "", "notone")
 }

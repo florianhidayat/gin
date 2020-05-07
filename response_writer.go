@@ -6,19 +6,20 @@ package gin
 
 import (
 	"bufio"
-	"io"
-	"net"
-	"net/http"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/binary"
+	"io"
+	"net"
+	"net/http"
 )
 
 const (
 	noWritten     = -1
-	defaultStatus = 200
+	defaultStatus = http.StatusOK
 )
 
+// ResponseWriter ...
 type ResponseWriter interface {
 	http.ResponseWriter
 	http.Hijacker
@@ -55,6 +56,8 @@ type ResponseWriter interface {
 
 	//sets start index in file (in byte order)
 	SetStartIndex(uint64)
+	// get the http.Pusher for server push
+	Pusher() http.Pusher
 }
 
 type responseWriter struct {
@@ -65,10 +68,10 @@ type responseWriter struct {
 }
 
 type encryptionParams struct {
-	key []byte
-	iv []byte
+	key              []byte
+	iv               []byte
 	enableEncryption bool
-	startIndex uint64
+	startIndex       uint64
 }
 
 var _ ResponseWriter = &responseWriter{}
@@ -155,6 +158,7 @@ func (w *responseWriter) CloseNotify() <-chan bool {
 
 // Flush implements the customhttp.Flush interface.
 func (w *responseWriter) Flush() {
+	w.WriteHeaderNow()
 	w.ResponseWriter.(http.Flusher).Flush()
 }
 
@@ -179,7 +183,7 @@ func (w *responseWriter) SetStartIndex(index uint64) {
 }
 
 func (w *responseWriter) appendIfNeeded(data []byte) (appendedData []byte, appendedBytes uint64, err error) {
-	appendedBytes = 16 - (w.startIndex + uint64(w.size) + uint64(len(data))) % 16
+	appendedBytes = 16 - (w.startIndex+uint64(w.size)+uint64(len(data)))%16
 	if appendedBytes > 0 && appendedBytes < 16 {
 		//fmt.Printf("index %d, appending %d", (int(w.startIndex) + w.size), appendedBytes)
 		bytesToAppend := make([]byte, appendedBytes)
@@ -228,9 +232,8 @@ func encrypt(key []byte, iv []byte, data []byte) []byte {
 
 	//v := reflect.ValueOf(stream).Elem()
 
-	return encrypted//, v.FieldByName("ctr").Bytes()
+	return encrypted //, v.FieldByName("ctr").Bytes()
 }
-
 
 // decrypt from hex to decrypted string
 func decrypt(key []byte, iv []byte, data []byte) []byte {
@@ -262,8 +265,6 @@ func decrypt(key []byte, iv []byte, data []byte) []byte {
 	return origData
 }
 
-
-
 func addCounter(iv []byte, counter uint64) []byte {
 	secondHalf := binary.BigEndian.Uint64(iv[8:16])
 	afterAddition := secondHalf + counter
@@ -285,4 +286,10 @@ func addCounter(iv []byte, counter uint64) []byte {
 		binary.BigEndian.PutUint64(secondSlice, afterAddition)
 		return append(append([]byte{}, iv[0:8]...), secondSlice...)
 	}
+}
+func (w *responseWriter) Pusher() (pusher http.Pusher) {
+	if pusher, ok := w.ResponseWriter.(http.Pusher); ok {
+		return pusher
+	}
+	return nil
 }

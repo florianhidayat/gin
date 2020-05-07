@@ -13,13 +13,17 @@ import (
 )
 
 func init() {
-	os.Setenv(ENV_GIN_MODE, TestMode)
+	os.Setenv(EnvGinMode, TestMode)
 }
 
 func TestSetMode(t *testing.T) {
 	assert.Equal(t, testCode, ginMode)
 	assert.Equal(t, TestMode, Mode())
-	os.Unsetenv(ENV_GIN_MODE)
+	os.Unsetenv(EnvGinMode)
+
+	SetMode("")
+	assert.Equal(t, debugCode, ginMode)
+	assert.Equal(t, DebugMode, Mode())
 
 	SetMode(DebugMode)
 	assert.Equal(t, debugCode, ginMode)
@@ -36,8 +40,22 @@ func TestSetMode(t *testing.T) {
 	assert.Panics(t, func() { SetMode("unknown") })
 }
 
+func TestDisableBindValidation(t *testing.T) {
+	v := binding.Validator
+	assert.NotNil(t, binding.Validator)
+	DisableBindValidation()
+	assert.Nil(t, binding.Validator)
+	binding.Validator = v
+}
+
 func TestEnableJsonDecoderUseNumber(t *testing.T) {
 	assert.False(t, binding.EnableDecoderUseNumber)
 	EnableJsonDecoderUseNumber()
 	assert.True(t, binding.EnableDecoderUseNumber)
+}
+
+func TestEnableJsonDecoderDisallowUnknownFields(t *testing.T) {
+	assert.False(t, binding.EnableDecoderDisallowUnknownFields)
+	EnableJsonDecoderDisallowUnknownFields()
+	assert.True(t, binding.EnableDecoderDisallowUnknownFields)
 }

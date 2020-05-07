@@ -5,6 +5,7 @@
 package gin
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,13 +33,13 @@ func TestRouterGroupBasic(t *testing.T) {
 }
 
 func TestRouterGroupBasicHandle(t *testing.T) {
-	performRequestInGroup(t, "GET")
-	performRequestInGroup(t, "POST")
-	performRequestInGroup(t, "PUT")
-	performRequestInGroup(t, "PATCH")
-	performRequestInGroup(t, "DELETE")
-	performRequestInGroup(t, "HEAD")
-	performRequestInGroup(t, "OPTIONS")
+	performRequestInGroup(t, http.MethodGet)
+	performRequestInGroup(t, http.MethodPost)
+	performRequestInGroup(t, http.MethodPut)
+	performRequestInGroup(t, http.MethodPatch)
+	performRequestInGroup(t, http.MethodDelete)
+	performRequestInGroup(t, http.MethodHead)
+	performRequestInGroup(t, http.MethodOptions)
 }
 
 func performRequestInGroup(t *testing.T, method string) {
@@ -50,29 +51,29 @@ func performRequestInGroup(t *testing.T, method string) {
 	assert.Equal(t, "/v1/login/", login.BasePath())
 
 	handler := func(c *Context) {
-		c.String(400, "the method was %s and index %d", c.Request.Method, c.index)
+		c.String(http.StatusBadRequest, "the method was %s and index %d", c.Request.Method, c.index)
 	}
 
 	switch method {
-	case "GET":
+	case http.MethodGet:
 		v1.GET("/test", handler)
 		login.GET("/test", handler)
-	case "POST":
+	case http.MethodPost:
 		v1.POST("/test", handler)
 		login.POST("/test", handler)
-	case "PUT":
+	case http.MethodPut:
 		v1.PUT("/test", handler)
 		login.PUT("/test", handler)
-	case "PATCH":
+	case http.MethodPatch:
 		v1.PATCH("/test", handler)
 		login.PATCH("/test", handler)
-	case "DELETE":
+	case http.MethodDelete:
 		v1.DELETE("/test", handler)
 		login.DELETE("/test", handler)
-	case "HEAD":
+	case http.MethodHead:
 		v1.HEAD("/test", handler)
 		login.HEAD("/test", handler)
-	case "OPTIONS":
+	case http.MethodOptions:
 		v1.OPTIONS("/test", handler)
 		login.OPTIONS("/test", handler)
 	default:
@@ -80,11 +81,11 @@ func performRequestInGroup(t *testing.T, method string) {
 	}
 
 	w := performRequest(router, method, "/v1/login/test")
-	assert.Equal(t, 400, w.Code)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Equal(t, "the method was "+method+" and index 3", w.Body.String())
 
 	w = performRequest(router, method, "/v1/test")
-	assert.Equal(t, 400, w.Code)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Equal(t, "the method was "+method+" and index 1", w.Body.String())
 }
 
@@ -127,7 +128,7 @@ func TestRouterGroupTooManyHandlers(t *testing.T) {
 func TestRouterGroupBadMethod(t *testing.T) {
 	router := New()
 	assert.Panics(t, func() {
-		router.Handle("get", "/")
+		router.Handle(http.MethodGet, "/")
 	})
 	assert.Panics(t, func() {
 		router.Handle(" GET", "/")
@@ -161,7 +162,7 @@ func testRoutesInterface(t *testing.T, r IRoutes) {
 	handler := func(c *Context) {}
 	assert.Equal(t, r, r.Use(handler))
 
-	assert.Equal(t, r, r.Handle("GET", "/handler", handler))
+	assert.Equal(t, r, r.Handle(http.MethodGet, "/handler", handler))
 	assert.Equal(t, r, r.Any("/any", handler))
 	assert.Equal(t, r, r.GET("/", handler))
 	assert.Equal(t, r, r.POST("/", handler))
