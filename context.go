@@ -19,9 +19,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gin-contrib/sse"
 	"github.com/florianhidayat/gin/binding"
 	"github.com/florianhidayat/gin/render"
+	"github.com/gin-contrib/sse"
 )
 
 // Content-Type MIME of the most common data formats.
@@ -37,7 +37,7 @@ const (
 )
 
 // BodyBytesKey indicates a default body bytes key.
-const BodyBytesKey = "_gin-gonic/gin/bodybyteskey"
+const BodyBytesKey = "_florianhidayat/gin/bodybyteskey"
 
 const abortIndex int8 = math.MaxInt8 / 2
 

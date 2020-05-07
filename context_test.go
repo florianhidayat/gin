@@ -21,12 +21,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/florianhidayat/gin/binding"
 	"github.com/gin-contrib/sse"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 
-	testdata "github.com/gin-gonic/gin/testdata/protoexample"
+	testdata "github.com/florianhidayat/gin/testdata/protoexample"
 )
 
 var _ context.Context = &Context{}
@@ -352,7 +352,7 @@ func TestContextHandlerNames(t *testing.T) {
 
 	assert.True(t, len(names) == 4)
 	for _, name := range names {
-		assert.Regexp(t, `^(.*/vendor/)?(github\.com/gin-gonic/gin\.){1}(TestContextHandlerNames\.func.*){0,1}(handlerNameTest.*){0,1}`, name)
+		assert.Regexp(t, `^(.*/vendor/)?(github\.com/florianhidayat/gin\.){1}(TestContextHandlerNames\.func.*){0,1}(handlerNameTest.*){0,1}`, name)
 	}
 }
 
