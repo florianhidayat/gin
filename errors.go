@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/florianhidayat/gin/json"
+	"github.com/florianhidayat/gin/internal/json"
 )
 
 // ErrorType is an unsigned 64-bit error code as defined in the gin spec.
